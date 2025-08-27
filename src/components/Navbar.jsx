@@ -6,6 +6,7 @@ import "../styles/Navbar.css";
 
 function Navbar() {
   const [rubriques, setRubriques] = useState([]);
+  const [searchText, setSearchText] = useState(""); // état du search
 
   useEffect(() => {
     axios
@@ -13,6 +14,11 @@ function Navbar() {
       .then((res) => setRubriques(res.data))
       .catch((err) => console.log(err));
   }, []);
+
+  // filtrer les rubriques selon le texte
+  const filteredRubriques = rubriques.filter((rub) =>
+    rub.title.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <nav className="navbar navbar-expand-lg fixed-top navbar-glass">
@@ -52,18 +58,36 @@ function Navbar() {
               >
                 Rubriques
               </Link>
-              <ul className="dropdown-menu">
-                {rubriques.map((rub) => (
-                  <li key={rub.id}>
-                    <Link className="dropdown-item" to={`/rubrique/${rub.id}`}>
-                      {rub.title}
-                    </Link>
-                  </li>
-                ))}
+              <ul className="dropdown-menu p-2">
+                {/* Champ de recherche */}
+                <li className="px-2 mb-2">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Rechercher..."
+                    value={searchText}
+                    onChange={(e) => setSearchText(e.target.value)}
+                  />
+                </li>
+                {/* Liste filtrée */}
+                {filteredRubriques.length > 0 ? (
+                  filteredRubriques.map((rub) => (
+                    <li key={rub.id}>
+                      <Link
+                        className="dropdown-item"
+                        to={`/rubrique/${rub.id}`}
+                      >
+                        {rub.title}
+                      </Link>
+                    </li>
+                  ))
+                ) : (
+                  <li className="dropdown-item text-muted">Aucun résultat</li>
+                )}
               </ul>
             </li>
 
-            {/* Search */}
+            {/* Icône Search (optionnel) */}
             <li className="nav-item ms-3">
               <Link className="nav-link search-icon" to="#search">
                 <Search size={22} color="white" />
