@@ -1,0 +1,21 @@
+.presentation-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  font-family: "Poppins", sans-serif;
+  line-height: 1.6;
+}
+
+.rubrique-title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 600;
+}
+
+.card-title {
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+}
+
+.card-text {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+}
