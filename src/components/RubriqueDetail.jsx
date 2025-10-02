@@ -3,12 +3,28 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../styles/RubriqueDetail.css";
 
-// Composant pour un contenu individuel
 function ContenuCard({ contenu }) {
+  const getThumbnail = (videoUrl) => {
+    if (!videoUrl) return null;
+    const match = videoUrl.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+    return match
+      ? `https://img.youtube.com/vi/${match[1]}/hqdefault.jpg`
+      : null;
+  };
+
+  const thumbnail = getThumbnail(contenu.video_url);
+
   return (
     <div className="col d-flex">
-      <div className="card shadow-sm h-100 w-100">
-        {contenu.video_url && (
+      <div className="card shadow-sm h-100 w-100 contenu-card border-0 rounded-4 overflow-hidden">
+        {thumbnail ? (
+          <img
+            src={thumbnail}
+            alt={contenu.title}
+            className="card-img-top contenu-img"
+            onClick={() => window.open(contenu.video_url, "_blank")}
+          />
+        ) : contenu.video_url ? (
           <div className="ratio ratio-16x9">
             <iframe
               src={contenu.video_url}
@@ -19,10 +35,13 @@ function ContenuCard({ contenu }) {
               referrerPolicy="strict-origin-when-cross-origin"
             ></iframe>
           </div>
-        )}
+        ) : null}
+
         <div className="card-body d-flex flex-column">
-          <h5 className="card-title">{contenu.title}</h5>
-          <p className="card-text flex-grow-1">{contenu.text_content}</p>
+          <h5 className="card-title text-center fw-bold">{contenu.title}</h5>
+          <p className="card-text text-muted flex-grow-1">
+            {contenu.text_content}
+          </p>
         </div>
       </div>
     </div>
@@ -52,7 +71,6 @@ function RubriqueDetail() {
     fetchRubrique();
   }, [id]);
 
-  // Optimisation : filtrage des contenus uniquement lorsque search ou rubrique change
   const filteredContenus = useMemo(() => {
     if (!rubrique?.contenus) return [];
     return rubrique.contenus.filter(
@@ -69,17 +87,21 @@ function RubriqueDetail() {
 
   return (
     <div className="container mt-5 pt-5">
-      <button className="btn btn-secondary mb-4" onClick={() => navigate(-1)}>
+      <button
+        className="btn btn-outline-dark mb-4 rounded-pill"
+        onClick={() => navigate(-1)}
+      >
         ← Retour
       </button>
 
-      <h2 className="mb-4 rubrique-title text-center">{rubrique.title}</h2>
+      <h2 className="mb-4 rubrique-title text-center display-5 fw-bold">
+        {rubrique.title}
+      </h2>
 
-      {/* Champ de recherche */}
       <div className="mb-4">
         <input
           type="text"
-          className="form-control"
+          className="form-control rounded-pill shadow-sm"
           placeholder="Filtrer les contenus..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}

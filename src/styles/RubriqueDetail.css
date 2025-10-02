@@ -1,21 +1,54 @@
-.presentation-card {
-  background-color: #f8f9fa;
-  border-radius: 8px;
+/* Style général des cartes de contenu */
+.contenu-card {
+  background-color: #f8f9fa; /* harmonisé avec .presentation-card */
+  border-radius: 12px; /* un peu plus arrondi */
   font-family: "Poppins", sans-serif;
-  line-height: 1.6;
+  transition: transform 0.3s, box-shadow 0.3s;
 }
 
+.contenu-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Images des vidéos */
+.contenu-img {
+  object-fit: cover;
+  height: 200px;
+  cursor: pointer;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  transition: transform 0.3s;
+}
+
+.contenu-img:hover {
+  transform: scale(1.05);
+}
+
+/* Titres */
 .rubrique-title {
-  font-family: "Poppins", sans-serif;
   font-weight: 600;
+  color: #343a40;
 }
 
 .card-title {
-  font-family: "Poppins", sans-serif;
   font-weight: 500;
+  text-align: center;
 }
 
 .card-text {
-  font-family: "Poppins", sans-serif;
   font-weight: 400;
+  color: #6c757d;
+}
+
+/* Input recherche */
+.form-control {
+  border-radius: 50px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Bouton retour */
+.btn-outline-dark {
+  border-radius: 50px;
+  font-weight: 500;
 }
