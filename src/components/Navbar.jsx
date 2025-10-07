@@ -1,101 +1,121 @@
-import React, { useEffect, useState } from "react";
-import { Search } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import { Menu, X, ChevronDown } from "lucide-react";
 import axios from "axios";
-import "../styles/Navbar.css";
 
 function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [rubriques, setRubriques] = useState([]);
-  const [searchText, setSearchText] = useState(""); // état du search
+
+  const dropdownRef = useRef(null); // ref du dropdown
 
   useEffect(() => {
     axios
       .get("http://localhost:8000/api/rubriques/")
       .then((res) => setRubriques(res.data))
-      .catch((err) => console.log(err));
+      .catch((err) => console.error(err));
   }, []);
 
-  // filtrer les rubriques selon le texte
-  const filteredRubriques = rubriques.filter((rub) =>
-    rub.title.toLowerCase().includes(searchText.toLowerCase())
+  // Fermer le dropdown si clic à l'extérieur
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [dropdownRef]);
+
+  const renderRubriqueLink = (rub) => (
+    <Link
+      key={rub.id}
+      to={`/rubrique/${rub.id}`}
+      className="block px-4 py-2 hover:bg-gray-700 rounded transition"
+      onClick={() => {
+        setIsDropdownOpen(false);
+        setIsOpen(false);
+      }}
+    >
+      {rub.title}
+    </Link>
   );
 
   return (
-    <nav className="navbar navbar-expand-lg fixed-top navbar-glass">
-      <div className="container">
-        <Link className="navbar-brand fw-bold" to="/">
-          XAM SA DIINEE
+    <nav className="bg-[#2C2F4A] sticky top-0 w-full z-50 shadow-md">
+      <div className="container mx-auto flex items-center justify-between px-4 md:px-6 py-4">
+        <Link to="/" className="text-white text-2xl font-extrabold">
+          XAM SA DINÉE
         </Link>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        {/* Menu desktop */}
+        <div className="hidden md:flex space-x-6 text-white font-medium items-center">
+          <Link to="/" className="hover:text-gray-300">
+            Accueil
+          </Link>
 
-        <div className="collapse navbar-collapse" id="navbarContent">
-          <ul className="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Accueil
-              </Link>
-            </li>
-
-            {/* Dropdown dynamique des rubriques */}
-            <li className="nav-item dropdown">
-              <Link
-                className="nav-link dropdown-toggle"
-                to="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                Rubriques
-              </Link>
-              <ul className="dropdown-menu p-2">
-                {/* Champ de recherche */}
-                <li className="px-2 mb-2">
-                  <input
-                    type="text"
-                    className="form-control"
-                    placeholder="Rechercher..."
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                  />
-                </li>
-                {/* Liste filtrée */}
-                {filteredRubriques.length > 0 ? (
-                  filteredRubriques.map((rub) => (
-                    <li key={rub.id}>
-                      <Link
-                        className="dropdown-item"
-                        to={`/rubrique/${rub.id}`}
-                      >
-                        {rub.title}
-                      </Link>
-                    </li>
-                  ))
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center hover:text-gray-300 transition"
+            >
+              Rubriques <ChevronDown size={16} className="ml-1" />
+            </button>
+            {isDropdownOpen && (
+              <div className="absolute top-full left-0 mt-2 bg-[#2C2F4A] shadow-lg rounded-md py-2 w-48">
+                {rubriques.length > 0 ? (
+                  rubriques.map(renderRubriqueLink)
                 ) : (
-                  <li className="dropdown-item text-muted">Aucun résultat</li>
+                  <p className="px-4 py-2 text-gray-400">Aucune rubrique</p>
                 )}
-              </ul>
-            </li>
-
-            {/* Icône Search (optionnel) */}
-            <li className="nav-item ms-3">
-              <Link className="nav-link search-icon" to="#search">
-                <Search size={22} color="white" />
-              </Link>
-            </li>
-          </ul>
+              </div>
+            )}
+          </div>
         </div>
+
+        {/* Burger menu mobile */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
+
+      {/* Menu mobile */}
+      {isOpen && (
+        <div className="md:hidden bg-[#2C2F4A] text-white px-4 pb-4 space-y-3 container mx-auto transition-all duration-300 ease-in-out">
+          <Link
+            to="/"
+            className="block hover:text-gray-300"
+            onClick={() => setIsOpen(false)}
+          >
+            Accueil
+          </Link>
+
+          <div className="space-y-1">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center justify-between w-full hover:text-gray-300"
+            >
+              Rubriques <ChevronDown size={16} />
+            </button>
+            {isDropdownOpen && (
+              <div className="pl-4">
+                {rubriques.length > 0 ? (
+                  rubriques.map(renderRubriqueLink)
+                ) : (
+                  <p className="px-4 py-2 text-gray-400">Aucune rubrique</p>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </nav>
   );
 }

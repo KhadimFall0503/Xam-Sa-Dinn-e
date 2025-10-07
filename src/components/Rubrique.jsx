@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../styles/Rubrique.css";
 
 function Rubrique() {
   const [rubriques, setRubriques] = useState([]);
@@ -13,38 +12,37 @@ function Rubrique() {
   }, []);
 
   return (
-    <div className="rubrique-section pt-5 mb-5">
-      <h2 className="text-center display-5 fw-semibold mb-5">
+    <div className="py-20 mt-5 bg-gray-50 border-2 border-gray-300 rounded-lg mx-4">
+      <h2 className="text-3xl md:text-4xl font-semibold text-center mb-12">
         Découvrez nos Rubriques
       </h2>
-      <div className="container">
-        <div className="row g-4 justify-content-center">
-          {rubriques.map((rub) => (
-            <div
-              className="col-10 col-sm-6 col-md-4 col-lg-3 d-flex"
-              key={rub.id}
-            >
-              <div className="rubrique-card shadow-sm d-flex flex-column">
-                <div className="rubrique-img-wrapper position-relative">
-                  <img
-                    src={rub.image_url}
-                    alt={rub.title}
-                    className="rubrique-img"
-                  />
-                  <div className="rubrique-overlay"></div>
-                </div>
-                <div className="card-body mt-auto">
-                  <a
-                    href={`/rubrique/${rub.id}`}
-                    className="btn btn-dark w-100"
-                  >
-                    {rub.title}
-                  </a>
-                </div>
-              </div>
+      <div className="max-w-6xl mx-auto px-4 grid gap-10 sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3">
+        {rubriques.map((rub) => (
+          <div
+            key={rub.id}
+            className="bg-white shadow-md overflow-hidden flex flex-col hover:shadow-xl transition-shadow transform hover:scale-105"
+          >
+            {/* Image */}
+            <div className="relative">
+              <img
+                src={rub.image_url}
+                alt={rub.title}
+                className="w-full h-64 md:h-72 object-cover"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-20 hover:bg-opacity-30 transition"></div>
             </div>
-          ))}
-        </div>
+
+            {/* Espace entre l'image et le bouton */}
+            <div className="flex flex-col">
+              <a
+                href={`/rubrique/${rub.id}`}
+                className="bg-[#2C2F4A] text-white text-center py-3 font-medium hover:bg-gray-700 transition text-lg"
+              >
+                {rub.title}
+              </a>
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );
